@@ -16,8 +16,6 @@ import com.vaadin.flow.router.Route;
 import java.util.List;
 
 
-//testing
-
 @Route("")
 public class MainView extends VerticalLayout {
     private UserRepository repository;
