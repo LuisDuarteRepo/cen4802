@@ -52,7 +52,7 @@ public class MainView extends VerticalLayout {
                 binder.writeBean(username);
                 repository.save(username);
                 refreshGrid();
-            }catch(ValidationException e ){
+            }catch(ValidationException e){
                 //
             }
         });
