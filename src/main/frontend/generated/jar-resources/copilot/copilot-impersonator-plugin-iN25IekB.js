@@ -1,48 +1,52 @@
-import { n as e } from "./chunk-DiqZc92J.js";
-import { L as t, Q as n, R as r, et as i, n as a, r as o, t as s, u as c } from "./icons-CwakCZgK.js";
-import { a as l, d as u, l as d, n as f, o as p, s as m, t as h } from "./section-panel-ui-state-hOj_RfX_.js";
-import { n as g, t as _ } from "./copilot-stored-machine-state-D6qB_Peh.js";
-import { n as v, t as y } from "./early-project-state-LGwavSyI.js";
-import { n as b, t as x } from "./base-panel-Fr0D1ZcU.js";
+import {n as e} from "./chunk-DiqZc92J.js";
+import {et as i, L as t, n as a, Q as n, R as r, r as o, t as s, u as c} from "./icons-CwakCZgK.js";
+import {a as l, d as u, l as d, n as f, o as p, s as m, t as h} from "./section-panel-ui-state-hOj_RfX_.js";
+import {n as g, t as _} from "./copilot-stored-machine-state-D6qB_Peh.js";
+import {n as v, t as y} from "./early-project-state-LGwavSyI.js";
+import {n as b, t as x} from "./base-panel-Fr0D1ZcU.js";
+
 //#region frontend/copilot/application-user-switcher.ts
 function S(e) {
-	return r("copilot-switch-user", { username: e }, (e) => e.data.error ? {
-		success: !1,
-		errorMessage: e.data.error.message
-	} : { success: !0 });
+    return r("copilot-switch-user", {username: e}, (e) => e.data.error ? {
+        success: !1,
+        errorMessage: e.data.error.message
+    } : {success: !0});
 }
+
 var C = e((() => {
-	t();
+    t();
 })), w, T;
 //#endregion
 e((() => {
-	o(), m(), i(), b(), a(), C(), _(), v(), h(), p(), w = class extends x {
-		constructor(...e) {
-			super(...e), this.username = "", this.errorMessage = "", this.isLoading = !1, this.handleKeyDown = async (e) => {
-				e.key === "Enter" && this.username && !this.isLoading && await this.handleSwitchUser();
-			}, this.handleSwitchUser = async () => {
-				if (!(!this.username || this.isLoading)) {
-					this.isLoading = !0, this.errorMessage = "";
-					try {
-						let e = await S(this.username);
-						e.success ? (g.addRecentSwitchedUsername(this.username), globalThis.location.reload()) : (this.errorMessage = e.errorMessage, this.isLoading = !1);
-					} catch {
-						this.errorMessage = "An unexpected error occurred", this.isLoading = !1;
-					}
-				}
-			}, this.switchToRecentUser = async (e) => {
-				this.username = e, await this.handleSwitchUser();
-			}, this.removeRecentUser = (e, t) => {
-				t.stopPropagation(), g.removeRecentSwitchedUsername(e), this.requestUpdate();
-			};
-		}
-		connectedCallback() {
-			super.connectedCallback(), this.classList.add("contents"), this.reaction(() => g.getRecentSwitchedUsernames(), () => {
-				this.requestUpdate();
-			});
-		}
-		render() {
-			if (!y.springSecurityEnabled) return c`
+    o(), m(), i(), b(), a(), C(), _(), v(), h(), p(), w = class extends x {
+        constructor(...e) {
+            super(...e), this.username = "", this.errorMessage = "", this.isLoading = !1, this.handleKeyDown = async (e) => {
+                e.key === "Enter" && this.username && !this.isLoading && await this.handleSwitchUser();
+            }, this.handleSwitchUser = async () => {
+                if (!(!this.username || this.isLoading)) {
+                    this.isLoading = !0, this.errorMessage = "";
+                    try {
+                        let e = await S(this.username);
+                        e.success ? (g.addRecentSwitchedUsername(this.username), globalThis.location.reload()) : (this.errorMessage = e.errorMessage, this.isLoading = !1);
+                    } catch {
+                        this.errorMessage = "An unexpected error occurred", this.isLoading = !1;
+                    }
+                }
+            }, this.switchToRecentUser = async (e) => {
+                this.username = e, await this.handleSwitchUser();
+            }, this.removeRecentUser = (e, t) => {
+                t.stopPropagation(), g.removeRecentSwitchedUsername(e), this.requestUpdate();
+            };
+        }
+
+        connectedCallback() {
+            super.connectedCallback(), this.classList.add("contents"), this.reaction(() => g.getRecentSwitchedUsernames(), () => {
+                this.requestUpdate();
+            });
+        }
+
+        render() {
+            if (!y.springSecurityEnabled) return c`
         <div class="flex flex-col items-center pb-4 px-4">
           <vaadin-icon class="icon-lg mb-2" .svg="${s.accountCircle}"></vaadin-icon>
           <h3 class="mb-0.5 mt-0 text-semibold text-sm">Spring Security Disabled</h3>
@@ -51,8 +55,8 @@ e((() => {
           </p>
         </div>
       `;
-			let e = g.getRecentSwitchedUsernames();
-			return c`
+            let e = g.getRecentSwitchedUsernames();
+            return c`
       <div class="flex flex-col gap-4 pb-4 px-4">
         <div class="flex gap-4 items-baseline">
           <vaadin-text-field
@@ -63,8 +67,8 @@ e((() => {
             .invalid="${this.errorMessage !== ""}"
             ?disabled="${this.isLoading}"
             @value-changed="${(e) => {
-				this.username = e.detail.value, this.errorMessage = "";
-			}}"
+                this.username = e.detail.value, this.errorMessage = "";
+            }}"
             @keydown="${this.handleKeyDown}">
             <vaadin-icon slot="prefix" .svg="${s.accountCircle}"></vaadin-icon>
           </vaadin-text-field>
@@ -104,17 +108,19 @@ e((() => {
             ` : ""}
       </div>
     `;
-		}
-	}, l([d()], w.prototype, "username", void 0), l([d()], w.prototype, "errorMessage", void 0), l([d()], w.prototype, "isLoading", void 0), w = l([u("copilot-impersonator")], w), T = {
-		header: "Impersonate User",
-		tag: n.IMPERSONATOR,
-		individual: !0,
-		toolbarOptions: {
-			allowedModesWithOrder: { common: 0 },
-			iconKey: "accountCircle"
-		}
-	}, globalThis.Vaadin.copilot.plugins.push({ init(e) {
-		e.addPanel(T);
-	} }), f.addPanel(T);
+        }
+    }, l([d()], w.prototype, "username", void 0), l([d()], w.prototype, "errorMessage", void 0), l([d()], w.prototype, "isLoading", void 0), w = l([u("copilot-impersonator")], w), T = {
+        header: "Impersonate User",
+        tag: n.IMPERSONATOR,
+        individual: !0,
+        toolbarOptions: {
+            allowedModesWithOrder: {common: 0},
+            iconKey: "accountCircle"
+        }
+    }, globalThis.Vaadin.copilot.plugins.push({
+        init(e) {
+            e.addPanel(T);
+        }
+    }), f.addPanel(T);
 }))();
-export { w as CopilotImpersonatorPanel };
+export {w as CopilotImpersonatorPanel};

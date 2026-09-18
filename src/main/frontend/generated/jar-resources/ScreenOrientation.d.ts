@@ -5,6 +5,7 @@
  * event.
  */
 export declare function currentScreenOrientationType(): string;
+
 /**
  * Returns the current screen orientation angle synchronously, or 0 if the
  * Screen Orientation API is unavailable.

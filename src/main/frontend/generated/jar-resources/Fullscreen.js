@@ -23,15 +23,18 @@ export function currentFullscreenState() {
     }
     return document.fullscreenElement ? 'FULLSCREEN' : 'NOT_FULLSCREEN';
 }
+
 // Dispatch on document.body so the server-side Page facade (listening on
 // the UI element, which is body) can update its signal.
 function dispatch(state) {
-    document.body.dispatchEvent(new CustomEvent('vaadin-fullscreen-change', { detail: state }));
+    document.body.dispatchEvent(new CustomEvent('vaadin-fullscreen-change', {detail: state}));
 }
+
 // Tracks the most recent component-fullscreen setup so the wrapper can be
 // torn down when fullscreen exits (programmatically or via Escape) or when
 // a new fullscreen request supersedes it.
 let activeComponentReset;
+
 function resetComponentIfActive() {
     if (activeComponentReset) {
         const fn = activeComponentReset;
@@ -39,6 +42,7 @@ function resetComponentIfActive() {
         fn();
     }
 }
+
 document.addEventListener('fullscreenchange', () => {
     if (!document.fullscreenElement) {
         resetComponentIfActive();
@@ -107,8 +111,7 @@ $wnd.Vaadin.Flow.fullscreen = {
         };
         try {
             await document.documentElement.requestFullscreen();
-        }
-        catch (e) {
+        } catch (e) {
             // Browser rejected the request — undo the DOM changes so the page
             // does not end up looking fullscreened without actually being so.
             resetComponentIfActive();

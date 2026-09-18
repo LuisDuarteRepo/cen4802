@@ -35,6 +35,7 @@ async function readClipboardPayload() {
         html: await get('text/html')
     };
 }
+
 /**
  * Re-encodes the given {@code <img>} as {@code image/png} via a canvas
  * round-trip. The source can be any rasterisable format the browser already
@@ -66,8 +67,7 @@ function imageToPngBlob(img) {
                 }
                 ctx.drawImage(img, 0, 0, width, height);
                 canvas.toBlob((png) => (png ? resolve(png) : reject(new Error('canvas.toBlob returned null'))), 'image/png');
-            }
-            catch (err) {
+            } catch (err) {
                 reject(err);
             }
         };
@@ -78,17 +78,16 @@ function imageToPngBlob(img) {
             // rather than wait for an event that never comes.
             if (img.naturalWidth > 0) {
                 draw();
-            }
-            else {
+            } else {
                 reject(new Error('image failed to load or has empty src'));
             }
-        }
-        else {
-            img.addEventListener('load', draw, { once: true });
-            img.addEventListener('error', () => reject(new Error('image load failed')), { once: true });
+        } else {
+            img.addEventListener('load', draw, {once: true});
+            img.addEventListener('error', () => reject(new Error('image load failed')), {once: true});
         }
     });
 }
+
 /**
  * Writes any combination of text/plain, text/html and image/png to the system
  * clipboard as a single ClipboardItem. Any argument may be {@code null} to omit
@@ -120,6 +119,7 @@ async function writeClipboardPayload(text, html, image) {
     await navigator.clipboard.write([new ClipboardItem(entries)]);
     return text !== null ? text : html;
 }
+
 /**
  * Posts each file from a {@code paste} event's {@code clipboardData.files} as
  * its own XHR to the URL stored as the named attribute on {@code element}. The
@@ -147,6 +147,7 @@ async function writeClipboardPayload(text, html, image) {
 // a different tab gets its own counter, but no server-side state crosses
 // tabs in this flow.
 let pasteSequence = 0;
+
 function uploadPastedFiles(event, element, urlAttribute) {
     const files = event.clipboardData?.files;
     if (!files || files.length === 0) {
@@ -174,7 +175,7 @@ function uploadPastedFiles(event, element, urlAttribute) {
         }
         // The per-file UploadHandler callback runs as each POST is processed;
         // log network/connectivity failures the server will never see otherwise.
-        uploads.push(fetch(url, { method: 'POST', headers: headers, body: file }).catch((err) => {
+        uploads.push(fetch(url, {method: 'POST', headers: headers, body: file}).catch((err) => {
             console.error('Vaadin clipboard file upload failed', err);
         }));
     }
@@ -187,6 +188,7 @@ function uploadPastedFiles(event, element, urlAttribute) {
         element.dispatchEvent(new CustomEvent('vaadin-paste-upload-finished'));
     });
 }
+
 const $wnd = window;
 $wnd.Vaadin ??= {};
 $wnd.Vaadin.Flow ??= {};

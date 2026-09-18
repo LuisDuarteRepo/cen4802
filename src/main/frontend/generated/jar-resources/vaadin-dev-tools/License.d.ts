@@ -1,23 +1,28 @@
-import { ServerMessage } from './vaadin-dev-tools';
+import {ServerMessage} from './vaadin-dev-tools';
+
 export interface Product {
     name: string;
     version: string;
 }
+
 export interface DownloadLicenseOptions {
     timeout?: number;
 }
+
 export interface PreTrial {
     trialName?: String;
     trialState: String;
     daysRemaining?: number;
     daysRemainingUntilRenewal?: number;
 }
+
 export interface ProductAndMessage {
     message: string;
     messageHtml?: string;
     product: Product;
     preTrial?: PreTrial;
 }
+
 /**
  * Name of the event fired on `document` when a license has been successfully
  * downloaded (e.g. after acquiring a trial or subscription from DevTools).
