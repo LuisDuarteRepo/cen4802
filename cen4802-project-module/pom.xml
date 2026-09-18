@@ -30,7 +30,7 @@
     </scm>
     <packaging>jar</packaging>
     <properties>
-        <java.version>26</java.version>
+        <java.version>25.0.4</java.version>
         <vaadin.version>25.2.6</vaadin.version>
     </properties>
     <dependencies>
