@@ -1,3 +1,4 @@
-import { n as e, r as t } from "./copilot-notification-CCNJdNg4.js";
+import {n as e, r as t} from "./copilot-notification-CCNJdNg4.js";
+
 e();
-export { t as showNotification };
+export {t as showNotification};

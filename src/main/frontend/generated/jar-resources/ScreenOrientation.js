@@ -22,6 +22,7 @@
 export function currentScreenOrientationType() {
     return screen.orientation?.type ?? 'unsupported';
 }
+
 /**
  * Returns the current screen orientation angle synchronously, or 0 if the
  * Screen Orientation API is unavailable.
@@ -29,11 +30,13 @@ export function currentScreenOrientationType() {
 export function currentScreenOrientationAngle() {
     return screen.orientation?.angle ?? 0;
 }
+
 // Dispatch on document.body so the server-side ScreenOrientation facade
 // (listening on the UI element, which is body) can update its signal.
 function dispatch(detail) {
-    document.body.dispatchEvent(new CustomEvent('vaadin-screen-orientation-change', { detail }));
+    document.body.dispatchEvent(new CustomEvent('vaadin-screen-orientation-change', {detail}));
 }
+
 if (screen.orientation) {
     screen.orientation.addEventListener('change', () => {
         dispatch({
@@ -45,6 +48,7 @@ if (screen.orientation) {
 const $wnd = window;
 $wnd.Vaadin ??= {};
 $wnd.Vaadin.Flow ??= {};
+
 function lockErrorCode(domExceptionName) {
     switch (domExceptionName) {
         case 'NotSupportedError':
@@ -57,6 +61,7 @@ function lockErrorCode(domExceptionName) {
             return 'UNKNOWN';
     }
 }
+
 $wnd.Vaadin.Flow.screenOrientation = {
     // Always resolves so the server-side .then(success, error) chain only
     // receives the "error" branch on a bridge failure (lost connection, etc.).
@@ -72,18 +77,18 @@ $wnd.Vaadin.Flow.screenOrientation = {
         }
         return screen.orientation
             .lock(type)
-            .then(() => ({ success: true }))
+            .then(() => ({success: true}))
             .catch((e) => {
-            const code = lockErrorCode(e.name);
-            const message = e.message ?? '';
-            return {
-                success: false,
-                code,
-                // The DOMException name is dropped once mapped to a typed code;
-                // keep it in the message for diagnostics when no code matches.
-                message: code === 'UNKNOWN' && e.name ? `${e.name}: ${message}` : message
-            };
-        });
+                const code = lockErrorCode(e.name);
+                const message = e.message ?? '';
+                return {
+                    success: false,
+                    code,
+                    // The DOMException name is dropped once mapped to a typed code;
+                    // keep it in the message for diagnostics when no code matches.
+                    message: code === 'UNKNOWN' && e.name ? `${e.name}: ${message}` : message
+                };
+            });
     },
     unlock() {
         screen.orientation?.unlock();

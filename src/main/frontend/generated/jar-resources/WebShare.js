@@ -21,4 +21,5 @@
 export function isShareSupported() {
     return typeof navigator.share === 'function';
 }
+
 //# sourceMappingURL=WebShare.js.map

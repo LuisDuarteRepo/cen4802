@@ -1,72 +1,89 @@
-import { n as e } from "./chunk-DiqZc92J.js";
-import { L as t, R as n, at as r, dt as i, n as a, o, r as s, t as c, u as l } from "./icons-CwakCZgK.js";
-import { a as u, c as d, i as f, l as p, o as m } from "./consts-CSALuSsm.js";
-import { a as h, d as g, i as _, l as v, n as y, o as b, r as x, s as S, t as C } from "./section-panel-ui-state-hOj_RfX_.js";
-import { a as w, i as T, n as E, r as D } from "./copilot-ui-state-Dc6l_5DA.js";
-import { i as O, n as k } from "./copilot-modes-wJyMqHUb.js";
-import { i as A, o as j } from "./copilot-error-handler-9OpssAH1.js";
-import { n as M, t as N } from "./early-project-state-LGwavSyI.js";
-import { i as P, o as F, s as I, t as L } from "./copilot-development-setup-user-guide-utils-DzEVQbWO.js";
-import { n as R, t as z } from "./base-panel-Fr0D1ZcU.js";
+import {n as e} from "./chunk-DiqZc92J.js";
+import {at as r, dt as i, L as t, n as a, o, R as n, r as s, t as c, u as l} from "./icons-CwakCZgK.js";
+import {a as u, c as d, i as f, l as p, o as m} from "./consts-CSALuSsm.js";
+import {
+    a as h,
+    d as g,
+    i as _,
+    l as v,
+    n as y,
+    o as b,
+    r as x,
+    s as S,
+    t as C
+} from "./section-panel-ui-state-hOj_RfX_.js";
+import {a as w, i as T, n as E, r as D} from "./copilot-ui-state-Dc6l_5DA.js";
+import {i as O, n as k} from "./copilot-modes-wJyMqHUb.js";
+import {i as A, o as j} from "./copilot-error-handler-9OpssAH1.js";
+import {n as M, t as N} from "./early-project-state-LGwavSyI.js";
+import {i as P, o as F, s as I, t as L} from "./copilot-development-setup-user-guide-utils-DzEVQbWO.js";
+import {n as R, t as z} from "./base-panel-Fr0D1ZcU.js";
+
 //#region frontend/copilot/copilot-development-setup-user-guide.ts
 function B(e, t) {
-	if (!t) return !0;
-	let [n, r, i] = t.split(".").map((e) => Number.parseInt(e)), [a, o, s] = e.split(".").map((e) => Number.parseInt(e));
-	if (n < a) return !0;
-	if (n === a) {
-		if (r < o) return !0;
-		if (r === o) return i < s;
-	}
-	return !1;
+    if (!t) return !0;
+    let [n, r, i] = t.split(".").map((e) => Number.parseInt(e)), [a, o, s] = e.split(".").map((e) => Number.parseInt(e));
+    if (n < a) return !0;
+    if (n === a) {
+        if (r < o) return !0;
+        if (r === o) return i < s;
+    }
+    return !1;
 }
+
 var V, H, U, W, G, K;
 //#endregion
 e((() => {
-	a(), S(), C(), s(), r(), p(), D(), I(), w(), j(), t(), M(), O(), R(), _(), b(), H = "https://github.com/JetBrains/JetBrainsRuntime/releases", U = "Download complete", W = (V = class extends z {
-		createRenderRoot() {
-			return this;
-		}
-		constructor() {
-			super(), this.javaPluginSectionOpened = !1, this.hotswapSectionOpened = !1, this.hotswapTab = "hotswapagent", this.downloadStatusMessages = [], this.downloadProgress = 0, this.onDownloadStatusUpdate = this.downloadStatusUpdate.bind(this), this.handleESC = (e) => {
-				k().appInteractable || e.key === "Escape" && y.openPanel(K.tag);
-			}, this.reaction(() => [N.jdkInfo, E.idePluginState], () => {
-				E.idePluginState && (!E.idePluginState.ide || !E.idePluginState.active ? this.javaPluginSectionOpened = !0 : (!new Set(["vscode", "intellij"]).has(E.idePluginState.ide) || !E.idePluginState.active) && (this.javaPluginSectionOpened = !1)), N.jdkInfo && P() !== "success" && (this.hotswapSectionOpened = !0);
-			}, { fireImmediately: !0 });
-		}
-		connectedCallback() {
-			super.connectedCallback(), this.classList.add("contents"), T.on("set-up-vs-code-hotswap-status", this.onDownloadStatusUpdate);
-		}
-		disconnectedCallback() {
-			super.disconnectedCallback(), T.off("set-up-vs-code-hotswap-status", this.onDownloadStatusUpdate);
-		}
-		render() {
-			let e = {
-				intellij: E.idePluginState?.ide === "intellij",
-				vscode: E.idePluginState?.ide === "vscode",
-				eclipse: E.idePluginState?.ide === "eclipse",
-				idePluginInstalled: !!E.idePluginState?.active
-			};
-			return l`
+    a(), S(), C(), s(), r(), p(), D(), I(), w(), j(), t(), M(), O(), R(), _(), b(), H = "https://github.com/JetBrains/JetBrainsRuntime/releases", U = "Download complete", W = (V = class extends z {
+        createRenderRoot() {
+            return this;
+        }
+
+        constructor() {
+            super(), this.javaPluginSectionOpened = !1, this.hotswapSectionOpened = !1, this.hotswapTab = "hotswapagent", this.downloadStatusMessages = [], this.downloadProgress = 0, this.onDownloadStatusUpdate = this.downloadStatusUpdate.bind(this), this.handleESC = (e) => {
+                k().appInteractable || e.key === "Escape" && y.openPanel(K.tag);
+            }, this.reaction(() => [N.jdkInfo, E.idePluginState], () => {
+                E.idePluginState && (!E.idePluginState.ide || !E.idePluginState.active ? this.javaPluginSectionOpened = !0 : (!new Set(["vscode", "intellij"]).has(E.idePluginState.ide) || !E.idePluginState.active) && (this.javaPluginSectionOpened = !1)), N.jdkInfo && P() !== "success" && (this.hotswapSectionOpened = !0);
+            }, {fireImmediately: !0});
+        }
+
+        connectedCallback() {
+            super.connectedCallback(), this.classList.add("contents"), T.on("set-up-vs-code-hotswap-status", this.onDownloadStatusUpdate);
+        }
+
+        disconnectedCallback() {
+            super.disconnectedCallback(), T.off("set-up-vs-code-hotswap-status", this.onDownloadStatusUpdate);
+        }
+
+        render() {
+            let e = {
+                intellij: E.idePluginState?.ide === "intellij",
+                vscode: E.idePluginState?.ide === "vscode",
+                eclipse: E.idePluginState?.ide === "eclipse",
+                idePluginInstalled: !!E.idePluginState?.active
+            };
+            return l`
       ${this.renderPluginSection(e)}
       <hr class="border-b border-e-0 border-s-0 border-t-0 mx-4 my-0" />
       ${this.renderHotswapSection(e)}
     `;
-		}
-		renderPluginSection(e) {
-			let t = "";
-			e.intellij ? t = "IntelliJ" : e.vscode ? t = "VS Code" : e.eclipse && (t = "Eclipse");
-			let n, r;
-			e.vscode || e.intellij ? e.idePluginInstalled ? (n = `Plugin for ${t} installed`, r = this.renderPluginInstalledContent()) : (n = `Plugin for ${t} not installed`, r = this.renderPluginIsNotInstalledContent(e)) : e.eclipse ? (n = e.idePluginInstalled ? "Eclipse plugin installed" : "Eclipse plugin not installed", r = e.idePluginInstalled ? this.renderPluginInstalledContent() : this.renderEclipsePluginContent()) : (n = "No IDE found", r = this.renderNoIdePluginContent());
-			let a = e.idePluginInstalled ? c.checkCircle : c.warning;
-			return l`
+        }
+
+        renderPluginSection(e) {
+            let t = "";
+            e.intellij ? t = "IntelliJ" : e.vscode ? t = "VS Code" : e.eclipse && (t = "Eclipse");
+            let n, r;
+            e.vscode || e.intellij ? e.idePluginInstalled ? (n = `Plugin for ${t} installed`, r = this.renderPluginInstalledContent()) : (n = `Plugin for ${t} not installed`, r = this.renderPluginIsNotInstalledContent(e)) : e.eclipse ? (n = e.idePluginInstalled ? "Eclipse plugin installed" : "Eclipse plugin not installed", r = e.idePluginInstalled ? this.renderPluginInstalledContent() : this.renderEclipsePluginContent()) : (n = "No IDE found", r = this.renderNoIdePluginContent());
+            let a = e.idePluginInstalled ? c.checkCircle : c.warning;
+            return l`
       <vaadin-details
         theme="reverse"
         .opened=${this.javaPluginSectionOpened}
         @opened-changed=${(e) => {
-				i(() => {
-					this.javaPluginSectionOpened = e.detail.value;
-				}), this.requestLayoutUpdate();
-			}}>
+                i(() => {
+                    this.javaPluginSectionOpened = e.detail.value;
+                }), this.requestLayoutUpdate();
+            }}>
         <vaadin-details-summary class="px-4 py-3.5" slot="summary">
           <div class="flex gap-1.5">
             <vaadin-icon
@@ -78,9 +95,10 @@ e((() => {
         <div>${r}</div>
       </vaadin-details>
     `;
-		}
-		renderNoIdePluginContent() {
-			return l`
+        }
+
+        renderNoIdePluginContent() {
+            return l`
       <div class="flex flex-col gap-2 pb-4 px-4">
         <p class="m-0 text-secondary">
           For the best development experience, use
@@ -94,9 +112,10 @@ e((() => {
         </p>
       </div>
     `;
-		}
-		renderEclipsePluginContent() {
-			return l`
+        }
+
+        renderEclipsePluginContent() {
+            return l`
       <div class="flex flex-col gap-2 items-start pb-4 px-4">
         <p class="m-0 text-secondary">Install the Vaadin Eclipse Plugin to ensure a smooth development workflow</p>
         <p class="m-0 text-secondary">
@@ -106,22 +125,24 @@ e((() => {
         <vaadin-button
           class="mt-2"
           @click="${() => {
-				window.open(f, "_blank");
-			}}"
+                window.open(f, "_blank");
+            }}"
           >Install from Eclipse Marketplace
           <vaadin-icon slot="suffix" .svg="${c.arrowOutward}"></vaadin-icon>
         </vaadin-button>
       </div>
     `;
-		}
-		renderPluginInstalledContent() {
-			return l`
+        }
+
+        renderPluginInstalledContent() {
+            return l`
       <p class="m-0 pb-4 px-4 text-secondary">You have a running plugin. Enjoy your awesome development workflow!</p>
     `;
-		}
-		renderPluginIsNotInstalledContent(e) {
-			let t = null, n = "Install from Marketplace";
-			return e.intellij ? (t = u, n = "Install from JetBrains Marketplace") : e.vscode ? (t = d, n = "Install from VSCode Marketplace") : e.eclipse && (t = f, n = "Install from Eclipse Marketplace"), l`
+        }
+
+        renderPluginIsNotInstalledContent(e) {
+            let t = null, n = "Install from Marketplace";
+            return e.intellij ? (t = u, n = "Install from JetBrains Marketplace") : e.vscode ? (t = d, n = "Install from VSCode Marketplace") : e.eclipse && (t = f, n = "Install from Eclipse Marketplace"), l`
       <div class="flex flex-col gap-2 items-start pb-4 px-4">
         <p class="m-0 text-secondary">Install the Vaadin IDE Plugin to ensure a smooth development workflow</p>
         <p class="m-0 text-secondary">
@@ -131,31 +152,35 @@ e((() => {
         ${t ? l` <vaadin-button
               class="mt-2"
               @click="${() => {
-				window.open(t, "_blank");
-			}}"
+                window.open(t, "_blank");
+            }}"
               >${n}
               <vaadin-icon slot="suffix" .svg="${c.arrowOutward}"></vaadin-icon>
             </vaadin-button>` : o}
       </div>
     `;
-		}
-		getActiveTabContent(e, t) {
-			return this.hotswapTab === "jrebel" ? t.jrebel ? this.renderJRebelInstalledContent() : this.renderJRebelNotInstalledContent() : e.intellij ? this.renderIntelliJHotswapHint() : e.vscode ? this.renderVSCodeHotswapHint() : this.renderHotswapAgentNotInstalledContent(e);
-		}
-		renderHotswapSection(e) {
-			let { jdkInfo: t } = N;
-			if (!t) return o;
-			let n = P(), r = F(), a, s;
-			n === "success" ? (a = c.checkCircle, s = "Java Hotswap is enabled") : n === "warning" ? (a = c.warning, s = "Java Hotswap is not enabled") : n === "error" && (a = c.warning, s = "Java Hotswap is partially enabled");
-			let u = this.getActiveTabContent(e, t), d = r === "jrebel" ? this.renderJRebelInstalledContent() : this.renderHotswapAgentInstalledContent(), f = this.hotswapTab === "hotswapagent" ? 0 : 1;
-			return l` <vaadin-details
+        }
+
+        getActiveTabContent(e, t) {
+            return this.hotswapTab === "jrebel" ? t.jrebel ? this.renderJRebelInstalledContent() : this.renderJRebelNotInstalledContent() : e.intellij ? this.renderIntelliJHotswapHint() : e.vscode ? this.renderVSCodeHotswapHint() : this.renderHotswapAgentNotInstalledContent(e);
+        }
+
+        renderHotswapSection(e) {
+            let {jdkInfo: t} = N;
+            if (!t) return o;
+            let n = P(), r = F(), a, s;
+            n === "success" ? (a = c.checkCircle, s = "Java Hotswap is enabled") : n === "warning" ? (a = c.warning, s = "Java Hotswap is not enabled") : n === "error" && (a = c.warning, s = "Java Hotswap is partially enabled");
+            let u = this.getActiveTabContent(e, t),
+                d = r === "jrebel" ? this.renderJRebelInstalledContent() : this.renderHotswapAgentInstalledContent(),
+                f = this.hotswapTab === "hotswapagent" ? 0 : 1;
+            return l` <vaadin-details
       theme="reverse"
       .opened=${this.hotswapSectionOpened}
       @opened-changed=${(e) => {
-				i(() => {
-					this.hotswapSectionOpened = e.detail.value;
-				}), this.requestLayoutUpdate();
-			}}>
+                i(() => {
+                    this.hotswapSectionOpened = e.detail.value;
+                }), this.requestLayoutUpdate();
+            }}>
       <vaadin-details-summary class="px-4 py-3.5" slot="summary">
         <div class="flex gap-1.5">
           <vaadin-icon
@@ -169,8 +194,8 @@ e((() => {
               <vaadin-tabs
                 .selected=${f}
                 @selected-changed=${(e) => {
-				this.hotswapTab = e.detail.value === 0 ? "hotswapagent" : "jrebel";
-			}}>
+                this.hotswapTab = e.detail.value === 0 ? "hotswapagent" : "jrebel";
+            }}>
                 <vaadin-tab>Hotswap Agent</vaadin-tab>
                 <vaadin-tab>JRebel</vaadin-tab>
               </vaadin-tabs>
@@ -178,9 +203,10 @@ e((() => {
             ` : l`${d}`}
       </div>
     </vaadin-details>`;
-		}
-		renderJRebelNotInstalledContent() {
-			return l`
+        }
+
+        renderJRebelNotInstalledContent() {
+            return l`
       <div class="flex flex-col gap-2 p-4">
         <p class="m-0 text-secondary">
           <a class="inline-flex items-center" href="https://www.jrebel.com"
@@ -203,18 +229,20 @@ e((() => {
         </p>
       </div>
     `;
-		}
-		renderHotswapAgentNotInstalledContent(e) {
-			return l` <div class="p-2">${[
-				this.renderJavaRunningInDebugModeSection(),
-				this.renderHotswapAgentJdkSection(e),
-				this.renderInstallHotswapAgentJdkSection(e),
-				this.renderHotswapAgentVersionSection(),
-				this.renderHotswapAgentMissingArgParam(e)
-			]}</div> `;
-		}
-		renderIntelliJHotswapHint() {
-			return l` <div class="flex flex-col gap-2 p-4">
+        }
+
+        renderHotswapAgentNotInstalledContent(e) {
+            return l` <div class="p-2">${[
+                this.renderJavaRunningInDebugModeSection(),
+                this.renderHotswapAgentJdkSection(e),
+                this.renderInstallHotswapAgentJdkSection(e),
+                this.renderHotswapAgentVersionSection(),
+                this.renderHotswapAgentMissingArgParam(e)
+            ]}</div> `;
+        }
+
+        renderIntelliJHotswapHint() {
+            return l` <div class="flex flex-col gap-2 p-4">
       <h3 class="font-semibold my-0 text-sm">Use 'Debug using Hotswap Agent' launch configuration</h3>
       <p class="m-0 text-secondary">
         Vaadin IntelliJ plugin offers launch mode that does not require any manual configuration!
@@ -228,9 +256,10 @@ e((() => {
         option.
       </p>
     </div>`;
-		}
-		renderVSCodeHotswapHint() {
-			return l` <div>
+        }
+
+        renderVSCodeHotswapHint() {
+            return l` <div>
       <h3 class="font-semibold my-0 text-sm">Use 'Debug (hotswap)'</h3>
       With Vaadin Visual Studio Code extension you can run Hotswap Agent without any manual configuration required!
       <p class="m-0">
@@ -241,17 +270,19 @@ e((() => {
         within your main class to debug application using Hotswap Agent.
       </p>
     </div>`;
-		}
-		renderJavaRunningInDebugModeSection() {
-			return l`
+        }
+
+        renderJavaRunningInDebugModeSection() {
+            return l`
       <vaadin-details theme="reverse" .opened="${!N.jdkInfo?.runningInJavaDebugMode}">
         <vaadin-details-summary class="p-2" slot="summary">Run Java in debug mode</vaadin-details-summary>
         <p class="m-0 pb-2 px-2 text-secondary">Start the application in debug mode in the IDE.</p>
       </vaadin-details>
     `;
-		}
-		renderHotswapAgentMissingArgParam(e) {
-			return l`
+        }
+
+        renderHotswapAgentMissingArgParam(e) {
+            return l`
       <vaadin-details theme="reverse" .opened="${!(N.jdkInfo?.runningWitHotswap && N.jdkInfo?.runningWithExtendClassDef)}">
         <vaadin-details-summary class="p-2" slot="summary">Enable HotswapAgent</vaadin-details-summary>
         <div class="flex flex-col gap-2 pb-2 px-2 text-secondary">
@@ -276,12 +307,16 @@ e((() => {
         </div>
       </vaadin-details>
     `;
-		}
-		renderHotswapAgentJdkSection(e) {
-			let t = N.jdkInfo?.extendedClassDefCapable, n = this.downloadStatusMessages?.[this.downloadStatusMessages.length - 1] === U, r = this.downloadProgress > 0 ? l`<vaadin-progress-bar .value="${this.downloadProgress}" min="0" max="1"></vaadin-progress-bar>` : o, i = n ? l`<h3 class="font-semibold my-0 text-sm">
+        }
+
+        renderHotswapAgentJdkSection(e) {
+            let t = N.jdkInfo?.extendedClassDefCapable,
+                n = this.downloadStatusMessages?.[this.downloadStatusMessages.length - 1] === U,
+                r = this.downloadProgress > 0 ? l`<vaadin-progress-bar .value="${this.downloadProgress}" min="0" max="1"></vaadin-progress-bar>` : o,
+                i = n ? l`<h3 class="font-semibold my-0 text-sm">
           Go to VS Code and launch the 'Debug using Hotswap Agent' configuration
         </h3>` : o;
-			return l`
+            return l`
       <vaadin-details theme="reverse" .opened="${!t}">
         <vaadin-details-summary class="p-2" slot="summary">Run using JetBrains Runtime JDK</vaadin-details-summary>
         <div class="flex flex-col gap-2 pb-2 px-2 text-secondary">
@@ -308,10 +343,11 @@ e((() => {
         </div>
       </vaadin-details>
     `;
-		}
-		renderInstallHotswapAgentJdkSection(e) {
-			let t = N.jdkInfo?.hotswapAgentFound, n = N.jdkInfo?.extendedClassDefCapable;
-			return l`
+        }
+
+        renderInstallHotswapAgentJdkSection(e) {
+            let t = N.jdkInfo?.hotswapAgentFound, n = N.jdkInfo?.extendedClassDefCapable;
+            return l`
       <vaadin-details theme="reverse" .opened="${!t}">
         <vaadin-details-summary class="p-2" slot="summary"> Install HotswapAgent </vaadin-details-summary>
         <div class="flex flex-col gap-2 pb-2 px-2 text-secondary">
@@ -339,11 +375,12 @@ e((() => {
         </div>
       </vaadin-details>
     `;
-		}
-		renderHotswapAgentVersionSection() {
-			if (!N.jdkInfo?.hotswapAgentFound) return o;
-			let e = N.jdkInfo?.hotswapVersionOk, t = N.jdkInfo?.hotswapVersion, n = N.jdkInfo?.hotswapAgentLocation;
-			return l`
+        }
+
+        renderHotswapAgentVersionSection() {
+            if (!N.jdkInfo?.hotswapAgentFound) return o;
+            let e = N.jdkInfo?.hotswapVersionOk, t = N.jdkInfo?.hotswapVersion, n = N.jdkInfo?.hotswapAgentLocation;
+            return l`
       <vaadin-details theme="reverse" .opened="${!e}">
         <vaadin-details-summary class="p-2" slot="summary">Hotswap version requires update</vaadin-details-summary>
         <div>
@@ -358,45 +395,57 @@ e((() => {
         </div>
       </vaadin-details>
     `;
-		}
-		renderJRebelInstalledContent() {
-			return l` <p class="m-0 pb-2 px-2">JRebel is in use. Enjoy your awesome development workflow!</p> `;
-		}
-		renderHotswapAgentInstalledContent() {
-			return l`
+        }
+
+        renderJRebelInstalledContent() {
+            return l` <p class="m-0 pb-2 px-2">JRebel is in use. Enjoy your awesome development workflow!</p> `;
+        }
+
+        renderHotswapAgentInstalledContent() {
+            return l`
       <p class="m-0 pb-4 px-4 text-secondary">Hotswap agent is in use. Enjoy your awesome development workflow!</p>
     `;
-		}
-		async downloadJetbrainsRuntime(e) {
-			return e.target.disabled = !0, e.preventDefault(), this.downloadStatusMessages = [], n(`${m}set-up-vs-code-hotswap`, {}, (e) => {
-				e.data.error ? (A("Error downloading JetBrains runtime", e.data.error), this.downloadStatusMessages = [...this.downloadStatusMessages, "Download failed"]) : this.downloadStatusMessages = [...this.downloadStatusMessages, U];
-			});
-		}
-		downloadStatusUpdate(e) {
-			let t = e.detail.progress;
-			t ? this.downloadProgress = t : this.downloadStatusMessages = [...this.downloadStatusMessages, e.detail.message];
-		}
-	}, V.NAME = "copilot-development-setup-user-guide", V), h([v()], W.prototype, "javaPluginSectionOpened", void 0), h([v()], W.prototype, "hotswapSectionOpened", void 0), h([v()], W.prototype, "hotswapTab", void 0), h([v()], W.prototype, "downloadStatusMessages", void 0), h([v()], W.prototype, "downloadProgress", void 0), W = h([g(W.NAME)], W), G = class extends x {
-		createRenderRoot() {
-			return this;
-		}
-		connectedCallback() {
-			super.connectedCallback(), this.classList.add("contents");
-		}
-		render() {
-			return l`<vaadin-button
+        }
+
+        async downloadJetbrainsRuntime(e) {
+            return e.target.disabled = !0, e.preventDefault(), this.downloadStatusMessages = [], n(`${m}set-up-vs-code-hotswap`, {}, (e) => {
+                e.data.error ? (A("Error downloading JetBrains runtime", e.data.error), this.downloadStatusMessages = [...this.downloadStatusMessages, "Download failed"]) : this.downloadStatusMessages = [...this.downloadStatusMessages, U];
+            });
+        }
+
+        downloadStatusUpdate(e) {
+            let t = e.detail.progress;
+            t ? this.downloadProgress = t : this.downloadStatusMessages = [...this.downloadStatusMessages, e.detail.message];
+        }
+    }, V.NAME = "copilot-development-setup-user-guide", V), h([v()], W.prototype, "javaPluginSectionOpened", void 0), h([v()], W.prototype, "hotswapSectionOpened", void 0), h([v()], W.prototype, "hotswapTab", void 0), h([v()], W.prototype, "downloadStatusMessages", void 0), h([v()], W.prototype, "downloadProgress", void 0), W = h([g(W.NAME)], W), G = class extends x {
+        createRenderRoot() {
+            return this;
+        }
+
+        connectedCallback() {
+            super.connectedCallback(), this.classList.add("contents");
+        }
+
+        render() {
+            return l`<vaadin-button
       id="close"
       @click="${() => y.closePanel(K.tag)}"
       >Close
     </vaadin-button>`;
-		}
-	}, G = h([g("copilot-development-setup-footer-actions")], G), K = {
-		header: "Development Workflow",
-		tag: L,
-		footerActionsTag: "copilot-development-setup-footer-actions",
-		individual: !0
-	}, globalThis.Vaadin.copilot.plugins.push({ init(e) {
-		e.addPanel(K);
-	} }), y.addPanel(K);
+        }
+    }, G = h([g("copilot-development-setup-footer-actions")], G), K = {
+        header: "Development Workflow",
+        tag: L,
+        footerActionsTag: "copilot-development-setup-footer-actions",
+        individual: !0
+    }, globalThis.Vaadin.copilot.plugins.push({
+        init(e) {
+            e.addPanel(K);
+        }
+    }), y.addPanel(K);
 }))();
-export { G as CopilotDevelopmentSetupFooterActions, W as CopilotDevelopmentSetupUserGuide, K as copilotDevelopmentSetupPanelConfig };
+export {
+    G as CopilotDevelopmentSetupFooterActions,
+    W as CopilotDevelopmentSetupUserGuide,
+    K as copilotDevelopmentSetupPanelConfig
+};

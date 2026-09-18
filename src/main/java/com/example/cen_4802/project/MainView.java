@@ -26,7 +26,7 @@ public class MainView extends VerticalLayout {
     private Binder<User> binder = new Binder<>(User.class);
     private Grid<User> grid = new Grid<>(User.class);
 
-    public MainView(UserRepository repository){
+    public MainView(UserRepository repository) {
         this.repository = repository;
 
         grid.setColumns("firstName", "lastName", "email");
@@ -35,7 +35,7 @@ public class MainView extends VerticalLayout {
         refreshGrid();
     }
 
-    private Component getForm(){
+    private Component getForm() {
         var layout = new HorizontalLayout();
         layout.setAlignItems(Alignment.BASELINE);
 
@@ -47,12 +47,12 @@ public class MainView extends VerticalLayout {
         binder.bindInstanceFields(this);
 
         addButton.addClickListener(click -> {
-            try{
+            try {
                 var username = new User();
                 binder.writeBean(username);
                 repository.save(username);
                 refreshGrid();
-            }catch(ValidationException e){
+            } catch (ValidationException e) {
                 //
             }
         });
@@ -60,7 +60,7 @@ public class MainView extends VerticalLayout {
         return layout;
     }
 
-    private void refreshGrid(){
+    private void refreshGrid() {
         List<User> users = repository.findAll();
         grid.setItems(users);
     }
