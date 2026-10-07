@@ -28,56 +28,56 @@ import './gridConnector.ts';
  */
 window.Vaadin.Flow.treeGridConnector = {};
 window.Vaadin.Flow.treeGridConnector.initLazy = function (grid) {
-    if (grid.$connector) {
-        return;
+  if (grid.$connector) {
+    return;
+  }
+
+  window.Vaadin.Flow.gridConnector.initLazy(grid);
+
+  grid._dataProviderController._shouldLoadCachePage = function (cache, page) {
+    // `$server.setViewportRangeByIndexPath` sends a preloaded viewport range based on
+    // the provided index path and `padding` parameter. Applying the new range clears
+    // the old range, which is still visible because the actual scroll happens only
+    // after all connector calls in that update are processed. This check prevents
+    // the old range from being unnecessarily re-requested while the new range is
+    // still being processed, which could cause flickering.
+    return !grid.__pendingScrollToIndexes;
+  };
+
+  grid.scrollToIndex = async function (...indexes) {
+    grid.__pendingScrollToIndexes = indexes;
+
+    if (!grid.clientHeight || !grid._columnTree || grid._dataProviderController.isLoading()) {
+      return;
     }
 
-    window.Vaadin.Flow.gridConnector.initLazy(grid);
+    const [start, end] = grid.$connector.getViewportRange();
+    const padding = Math.floor((end - start) * 1.5);
+    const flatIndex = await grid.$server.setViewportRangeByIndexPath(indexes, padding);
+    grid._scrollToFlatIndex(flatIndex);
 
-    grid._dataProviderController._shouldLoadCachePage = function (cache, page) {
-        // `$server.setViewportRangeByIndexPath` sends a preloaded viewport range based on
-        // the provided index path and `padding` parameter. Applying the new range clears
-        // the old range, which is still visible because the actual scroll happens only
-        // after all connector calls in that update are processed. This check prevents
-        // the old range from being unnecessarily re-requested while the new range is
-        // still being processed, which could cause flickering.
-        return !grid.__pendingScrollToIndexes;
-    };
+    delete grid.__pendingScrollToIndexes;
 
-    grid.scrollToIndex = async function (...indexes) {
-        grid.__pendingScrollToIndexes = indexes;
+    return flatIndex;
+  };
 
-        if (!grid.clientHeight || !grid._columnTree || grid._dataProviderController.isLoading()) {
-            return;
-        }
+  grid.__getRowLevel = function (row) {
+    return row._item?.level ?? 0;
+  };
 
-        const [start, end] = grid.$connector.getViewportRange();
-        const padding = Math.floor((end - start) * 1.5);
-        const flatIndex = await grid.$server.setViewportRangeByIndexPath(indexes, padding);
-        grid._scrollToFlatIndex(flatIndex);
+  grid._isExpanded = function (item) {
+    return !!item?.expanded;
+  };
 
-        delete grid.__pendingScrollToIndexes;
+  grid.expandItem = function (item) {
+    if (item !== undefined) {
+      grid.$server.updateExpandedState(grid.getItemId(item), true);
+    }
+  };
 
-        return flatIndex;
-    };
-
-    grid.__getRowLevel = function (row) {
-        return row._item?.level ?? 0;
-    };
-
-    grid._isExpanded = function (item) {
-        return !!item?.expanded;
-    };
-
-    grid.expandItem = function (item) {
-        if (item !== undefined) {
-            grid.$server.updateExpandedState(grid.getItemId(item), true);
-        }
-    };
-
-    grid.collapseItem = function (item) {
-        if (item !== undefined) {
-            grid.$server.updateExpandedState(grid.getItemId(item), false);
-        }
-    };
+  grid.collapseItem = function (item) {
+    if (item !== undefined) {
+      grid.$server.updateExpandedState(grid.getItemId(item), false);
+    }
+  };
 };

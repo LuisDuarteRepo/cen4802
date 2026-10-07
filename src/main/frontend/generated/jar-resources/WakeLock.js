@@ -19,14 +19,12 @@
 let wanted = false;
 let sentinel = null;
 let visibilityListenerInstalled = false;
-
 function dispatch(element, state) {
-    element.dispatchEvent(new CustomEvent('vaadin-wake-lock-change', {detail: state}));
+    element.dispatchEvent(new CustomEvent('vaadin-wake-lock-change', { detail: state }));
 }
-
 async function acquire(element) {
     if (sentinel) {
-        return {state: 'granted'};
+        return { state: 'granted' };
     }
     if (!window.isSecureContext || !('wakeLock' in navigator)) {
         return {
@@ -44,11 +42,12 @@ async function acquire(element) {
         if (!wanted || document.visibilityState !== 'visible') {
             try {
                 await next.release();
-            } catch (_e) {
+            }
+            catch (_e) {
                 // Ignore; releasing an already-released sentinel throws on some
                 // browsers and there is nothing meaningful to do here.
             }
-            return {state: 'deferred'};
+            return { state: 'deferred' };
         }
         sentinel = next;
         next.addEventListener('release', () => {
@@ -56,8 +55,9 @@ async function acquire(element) {
             dispatch(element, 'RELEASED');
         });
         dispatch(element, 'ACTIVE');
-        return {state: 'granted'};
-    } catch (e) {
+        return { state: 'granted' };
+    }
+    catch (e) {
         const name = e?.name;
         const errorCode = name === 'NotAllowedError' ? 'NOT_ALLOWED' : 'UNKNOWN';
         return {
@@ -67,7 +67,6 @@ async function acquire(element) {
         };
     }
 }
-
 function installVisibilityListener(element) {
     if (visibilityListenerInstalled) {
         return;
@@ -79,7 +78,6 @@ function installVisibilityListener(element) {
         }
     });
 }
-
 const $wnd = window;
 $wnd.Vaadin ??= {};
 $wnd.Vaadin.Flow ??= {};
@@ -90,7 +88,7 @@ $wnd.Vaadin.Flow.wakeLock = {
         if (document.visibilityState !== 'visible') {
             // The browser will not grant a lock while the page is hidden; the
             // visibilitychange listener will pick it up on the next 'visible'.
-            return Promise.resolve({state: 'deferred'});
+            return Promise.resolve({ state: 'deferred' });
         }
         return acquire(element);
     },
@@ -103,7 +101,8 @@ $wnd.Vaadin.Flow.wakeLock = {
         sentinel = null;
         try {
             await current.release();
-        } catch (_e) {
+        }
+        catch (_e) {
             // Ignore; the 'release' event listener installed in acquire() also
             // dispatches RELEASED, so the state still reaches the server even when
             // the explicit release() call rejects.

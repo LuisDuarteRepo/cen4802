@@ -13,8 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-import {createRoot, Root} from 'react-dom/client';
-import {createElement, type Dispatch, type ReactElement, type ReactNode, useEffect, useReducer} from 'react';
+import { createRoot, Root } from 'react-dom/client';
+import { createElement, type Dispatch, type ReactElement, type ReactNode, useEffect, useReducer } from 'react';
 
 type FlowStateKeyChangedAction<K extends string, V> = Readonly<{
     type: 'stateKeyChanged';
@@ -27,7 +27,7 @@ type FlowStateReducerAction = FlowStateKeyChangedAction<string, unknown>;
 function stateReducer<S extends Readonly<Record<string, unknown>>>(state: S, action: FlowStateReducerAction): S {
     switch (action.type) {
         case 'stateKeyChanged':
-            const {value} = action;
+            const { value } = action;
             return {
                 ...state,
                 key: value
@@ -39,8 +39,7 @@ function stateReducer<S extends Readonly<Record<string, unknown>>>(state: S, act
 
 type DispatchEvent<T> = T extends undefined ? () => boolean : (value: T) => boolean;
 
-const emptyAction: Dispatch<unknown> = () => {
-};
+const emptyAction: Dispatch<unknown> = () => {};
 
 /**
  * An object with APIs exposed for using in the {@link ReactAdapterElement#render}
@@ -231,15 +230,15 @@ export abstract class ReactAdapterElement extends HTMLElement {
             },
             set(nextValue: T) {
                 this.#state[key] = nextValue;
-                this.#dispatchFlowState({type: 'stateKeyChanged', key, value});
+                this.#dispatchFlowState({ type: 'stateKeyChanged', key, value });
             }
         });
 
-        const dispatchChangedEvent = this.useCustomEvent<{ value: T }>(`${key}-changed`, {detail: {value}});
+        const dispatchChangedEvent = this.useCustomEvent<{ value: T }>(`${key}-changed`, { detail: { value } });
         const setValue = (value: T) => {
             this.#state[key] = value;
-            dispatchChangedEvent({value});
-            this.#dispatchFlowState({type: 'stateKeyChanged', key, value});
+            dispatchChangedEvent({ value });
+            this.#dispatchFlowState({ type: 'stateKeyChanged', key, value });
         };
         this.#stateSetters.set(key, setValue as Dispatch<unknown>);
         return [value, setValue];
@@ -296,7 +295,7 @@ export abstract class ReactAdapterElement extends HTMLElement {
         useEffect(() => {
             this.#readyCallback.get(name)?.();
         }, []);
-        return createElement('flow-content-container', {name, style: {display: 'contents'}});
+        return createElement('flow-content-container', { name, style: { display: 'contents' } });
     }
 
     #maybeRenderRoot() {

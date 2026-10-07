@@ -1,244 +1,244 @@
-import {Debouncer} from '@vaadin/component-base/src/debounce.js';
-import {timeOut} from '@vaadin/component-base/src/async.js';
-import {ComboBoxPlaceholder} from '@vaadin/combo-box/src/vaadin-combo-box-placeholder.js';
+import { Debouncer } from '@vaadin/component-base/src/debounce.js';
+import { timeOut } from '@vaadin/component-base/src/async.js';
+import { ComboBoxPlaceholder } from '@vaadin/combo-box/src/vaadin-combo-box-placeholder.js';
 
 window.Vaadin.Flow.comboBoxConnector = {};
 window.Vaadin.Flow.comboBoxConnector.initLazy = (comboBox) => {
-    // Check whether the connector was already initialized for the ComboBox
-    if (comboBox.$connector) {
-        return;
+  // Check whether the connector was already initialized for the ComboBox
+  if (comboBox.$connector) {
+    return;
+  }
+
+  comboBox.$connector = {};
+
+  let cache = {};
+  const placeHolder = new window.Vaadin.ComboBoxPlaceholder();
+
+  let lastTypedFilter = '';
+  let lastRequestedRange = [-1, -1];
+  let lastRequestedFilter = '';
+  let needsDataCommunicatorReset = false;
+
+  const dataProvider = function (params, callback) {
+    if (params.pageSize != comboBox.pageSize) {
+      throw 'Invalid pageSize';
     }
 
-    comboBox.$connector = {};
+    if (comboBox._clientSideFilter) {
+      if (cache[0]) {
+        performClientSideFilter(cache[0], params.filter, callback);
+        return;
+      }
 
-    let cache = {};
-    const placeHolder = new window.Vaadin.ComboBoxPlaceholder();
+      // First fetch: ignore the typed filter so we get the full dataset
+      params = { ...params, filter: '' };
+    }
 
-    let lastTypedFilter = '';
-    let lastRequestedRange = [-1, -1];
-    let lastRequestedFilter = '';
-    let needsDataCommunicatorReset = false;
+    if (lastTypedFilter !== params.filter) {
+      cache = {};
+      lastTypedFilter = params.filter;
+      lastRequestedRange = [-1, -1];
 
-    const dataProvider = function (params, callback) {
-        if (params.pageSize != comboBox.pageSize) {
-            throw 'Invalid pageSize';
+      comboBox._filterDebouncer = Debouncer.debounce(
+        comboBox._filterDebouncer,
+        timeOut.after(comboBox._filterTimeout ?? 500),
+        () => {
+          // Filter cycled back to what server last received — force re-emit.
+          if (params.filter === lastRequestedFilter) {
+            needsDataCommunicatorReset = true;
+          }
+
+          comboBox.clearCache();
         }
+      );
+      return;
+    }
 
-        if (comboBox._clientSideFilter) {
-            if (cache[0]) {
-                performClientSideFilter(cache[0], params.filter, callback);
-                return;
-            }
+    if (comboBox._filterDebouncer?.isActive()) {
+      return;
+    }
 
-            // First fetch: ignore the typed filter so we get the full dataset
-            params = {...params, filter: ''};
-        }
+    // If buffer-prefetch already cached this page, commit it without a server
+    // round-trip; otherwise ask the server.
+    if (cache[params.page]) {
+      callback(cache[params.page], comboBox.size);
+      return;
+    }
 
-        if (lastTypedFilter !== params.filter) {
-            cache = {};
-            lastTypedFilter = params.filter;
-            lastRequestedRange = [-1, -1];
+    comboBox.$connector.requestPage(params.page, params.filter);
+  };
 
-            comboBox._filterDebouncer = Debouncer.debounce(
-                comboBox._filterDebouncer,
-                timeOut.after(comboBox._filterTimeout ?? 500),
-                () => {
-                    // Filter cycled back to what server last received — force re-emit.
-                    if (params.filter === lastRequestedFilter) {
-                        needsDataCommunicatorReset = true;
-                    }
+  comboBox.$connector.getViewportRange = function () {
+    const indices = Array.from(comboBox._scroller?.children ?? [])
+      .map((child) => child.index)
+      .filter((index) => Number.isFinite(index))
+      .sort((a, b) => a - b);
+    if (indices.length === 0) {
+      return [0, 0];
+    }
+    return [indices[0], indices[indices.length - 1]];
+  };
 
-                    comboBox.clearCache();
-                }
-            );
-            return;
-        }
+  comboBox.$connector.requestPage = function (page, filter) {
+    let viewportRange = comboBox.$connector.getViewportRange();
+    const buffer = viewportRange[1] - viewportRange[0];
+    const sizeLimit = Number.isFinite(comboBox.size) ? comboBox.size : Number.POSITIVE_INFINITY;
+    viewportRange[0] = Math.max(viewportRange[0] - buffer, 0);
+    viewportRange[1] = Math.min(viewportRange[1] + buffer, sizeLimit - 1);
 
-        if (comboBox._filterDebouncer?.isActive()) {
-            return;
-        }
+    let viewportPageRange = [
+      Math.floor(viewportRange[0] / comboBox.pageSize),
+      Math.floor(viewportRange[1] / comboBox.pageSize)
+    ];
 
-        // If buffer-prefetch already cached this page, commit it without a server
-        // round-trip; otherwise ask the server.
-        if (cache[params.page]) {
-            callback(cache[params.page], comboBox.size);
-            return;
-        }
+    // Collapse to the requested page when it's outside the current viewport,
+    // so confirm() can resolve callbacks left behind by fast scrolling.
+    if (page < viewportPageRange[0] || page > viewportPageRange[1]) {
+      viewportPageRange = [page, page];
+    }
 
-        comboBox.$connector.requestPage(params.page, params.filter);
-    };
+    if (lastRequestedRange[0] != viewportPageRange[0] || lastRequestedRange[1] != viewportPageRange[1]) {
+      const startIndex = viewportPageRange[0] * comboBox.pageSize;
+      const endIndex = (viewportPageRange[1] + 1) * comboBox.pageSize;
+      comboBox.$server.setViewportRange(startIndex, endIndex - startIndex, filter);
+    }
 
-    comboBox.$connector.getViewportRange = function () {
-        const indices = Array.from(comboBox._scroller?.children ?? [])
-            .map((child) => child.index)
-            .filter((index) => Number.isFinite(index))
-            .sort((a, b) => a - b);
-        if (indices.length === 0) {
-            return [0, 0];
-        }
-        return [indices[0], indices[indices.length - 1]];
-    };
+    if (needsDataCommunicatorReset) {
+      comboBox.$server.resetDataCommunicator();
+      needsDataCommunicatorReset = false;
+    }
 
-    comboBox.$connector.requestPage = function (page, filter) {
-        let viewportRange = comboBox.$connector.getViewportRange();
-        const buffer = viewportRange[1] - viewportRange[0];
-        const sizeLimit = Number.isFinite(comboBox.size) ? comboBox.size : Number.POSITIVE_INFINITY;
-        viewportRange[0] = Math.max(viewportRange[0] - buffer, 0);
-        viewportRange[1] = Math.min(viewportRange[1] + buffer, sizeLimit - 1);
+    lastRequestedRange = viewportPageRange;
+    lastRequestedFilter = filter;
+  };
 
-        let viewportPageRange = [
-            Math.floor(viewportRange[0] / comboBox.pageSize),
-            Math.floor(viewportRange[1] / comboBox.pageSize)
-        ];
+  comboBox.$connector.clear = (start, length) => {
+    const { pageSize } = comboBox;
+    const firstPage = Math.floor(start / pageSize);
+    const lastPage = firstPage + Math.ceil(length / pageSize);
 
-        // Collapse to the requested page when it's outside the current viewport,
-        // so confirm() can resolve callbacks left behind by fast scrolling.
-        if (page < viewportPageRange[0] || page > viewportPageRange[1]) {
-            viewportPageRange = [page, page];
-        }
+    for (let page = firstPage; page < lastPage; page++) {
+      delete cache[page];
+    }
 
-        if (lastRequestedRange[0] != viewportPageRange[0] || lastRequestedRange[1] != viewportPageRange[1]) {
-            const startIndex = viewportPageRange[0] * comboBox.pageSize;
-            const endIndex = (viewportPageRange[1] + 1) * comboBox.pageSize;
-            comboBox.$server.setViewportRange(startIndex, endIndex - startIndex, filter);
-        }
+    for (let index = firstPage * pageSize; index < lastPage * pageSize; index++) {
+      if (comboBox.filteredItems[index]) {
+        comboBox.filteredItems[index] = placeHolder;
+      }
+    }
+  };
 
-        if (needsDataCommunicatorReset) {
-            comboBox.$server.resetDataCommunicator();
-            needsDataCommunicatorReset = false;
-        }
+  comboBox.$connector.filter = (item, filter) => {
+    filter = filter ? filter.toString().toLowerCase() : '';
+    return comboBox._getItemLabel(item, comboBox.itemLabelPath).toString().toLowerCase().indexOf(filter) > -1;
+  };
 
-        lastRequestedRange = viewportPageRange;
-        lastRequestedFilter = filter;
-    };
+  comboBox.$connector.set = (index, items, filter) => {
+    if (filter !== lastTypedFilter) {
+      return;
+    }
 
-    comboBox.$connector.clear = (start, length) => {
-        const {pageSize} = comboBox;
-        const firstPage = Math.floor(start / pageSize);
-        const lastPage = firstPage + Math.ceil(length / pageSize);
+    if (index % comboBox.pageSize != 0) {
+      throw 'Got new data to index ' + index + ' which is not aligned with the page size of ' + comboBox.pageSize;
+    }
 
-        for (let page = firstPage; page < lastPage; page++) {
-            delete cache[page];
-        }
+    const { pendingRequests } = comboBox.__dataProviderController.rootCache;
+    if (index === 0 && items.length === 0 && pendingRequests[0]) {
+      // Makes sure that the dataProvider callback is called even when server
+      // returns empty data set (no items match the filter).
+      cache[0] = [];
+      return;
+    }
 
-        for (let index = firstPage * pageSize; index < lastPage * pageSize; index++) {
-            if (comboBox.filteredItems[index]) {
-                comboBox.filteredItems[index] = placeHolder;
-            }
-        }
-    };
+    const firstPageToSet = index / comboBox.pageSize;
+    const updatedPageCount = Math.ceil(items.length / comboBox.pageSize);
 
-    comboBox.$connector.filter = (item, filter) => {
-        filter = filter ? filter.toString().toLowerCase() : '';
-        return comboBox._getItemLabel(item, comboBox.itemLabelPath).toString().toLowerCase().indexOf(filter) > -1;
-    };
+    for (let i = 0; i < updatedPageCount; i++) {
+      let page = firstPageToSet + i;
+      let slice = items.slice(i * comboBox.pageSize, (i + 1) * comboBox.pageSize);
 
-    comboBox.$connector.set = (index, items, filter) => {
-        if (filter !== lastTypedFilter) {
-            return;
-        }
+      cache[page] = slice;
+    }
+  };
 
-        if (index % comboBox.pageSize != 0) {
-            throw 'Got new data to index ' + index + ' which is not aligned with the page size of ' + comboBox.pageSize;
-        }
+  comboBox.$connector.updateData = (items) => {
+    const itemsMap = new Map(items.map((item) => [item.key, item]));
 
-        const {pendingRequests} = comboBox.__dataProviderController.rootCache;
-        if (index === 0 && items.length === 0 && pendingRequests[0]) {
-            // Makes sure that the dataProvider callback is called even when server
-            // returns empty data set (no items match the filter).
-            cache[0] = [];
-            return;
-        }
+    comboBox.filteredItems = comboBox.filteredItems.map((item) => {
+      return itemsMap.get(item.key) || item;
+    });
+  };
 
-        const firstPageToSet = index / comboBox.pageSize;
-        const updatedPageCount = Math.ceil(items.length / comboBox.pageSize);
+  comboBox.$connector.updateSize = function (newSize) {
+    if (!comboBox._clientSideFilter) {
+      // FIXME: It may be that this size set is unnecessary, since when
+      // providing data to combobox via callback we may use data's size.
+      // However, if this size reflect the whole data size, including
+      // data not fetched yet into client side, and combobox expect it
+      // to be set as such, the at least, we don't need it in case the
+      // filter is clientSide only, since it'll increase the height of
+      // the popup at only at first user filter to this size, while the
+      // filtered items count are less.
+      comboBox.size = newSize;
+    }
+  };
 
-        for (let i = 0; i < updatedPageCount; i++) {
-            let page = firstPageToSet + i;
-            let slice = items.slice(i * comboBox.pageSize, (i + 1) * comboBox.pageSize);
+  comboBox.$connector.reset = function () {
+    comboBox._filterDebouncer?.cancel();
+    comboBox._filterDebouncer = null;
+    cache = {};
+    lastRequestedRange = [-1, -1];
+    lastTypedFilter = '';
+    comboBox.clearCache();
+  };
 
-            cache[page] = slice;
-        }
-    };
+  comboBox.$connector.confirm = function (id, filter) {
+    if (filter !== lastTypedFilter) {
+      return;
+    }
 
-    comboBox.$connector.updateData = (items) => {
-        const itemsMap = new Map(items.map((item) => [item.key, item]));
+    // We're done applying changes from this batch, resolve pending
+    // callbacks
+    const { pendingRequests } = comboBox.__dataProviderController.rootCache;
+    Object.entries(pendingRequests).forEach(([page, callback]) => {
+      const items = cache[page];
 
-        comboBox.filteredItems = comboBox.filteredItems.map((item) => {
-            return itemsMap.get(item.key) || item;
-        });
-    };
+      if (comboBox._clientSideFilter && items) {
+        performClientSideFilter(items, comboBox.filter, callback);
+        return;
+      }
 
-    comboBox.$connector.updateSize = function (newSize) {
-        if (!comboBox._clientSideFilter) {
-            // FIXME: It may be that this size set is unnecessary, since when
-            // providing data to combobox via callback we may use data's size.
-            // However, if this size reflect the whole data size, including
-            // data not fetched yet into client side, and combobox expect it
-            // to be set as such, the at least, we don't need it in case the
-            // filter is clientSide only, since it'll increase the height of
-            // the popup at only at first user filter to this size, while the
-            // filtered items count are less.
-            comboBox.size = newSize;
-        }
-    };
+      callback(items ?? [], comboBox.size);
+      delete cache[page];
+    });
 
-    comboBox.$connector.reset = function () {
-        comboBox._filterDebouncer?.cancel();
-        comboBox._filterDebouncer = null;
-        cache = {};
-        lastRequestedRange = [-1, -1];
-        lastTypedFilter = '';
-        comboBox.clearCache();
-    };
+    // Let server know we're done
+    comboBox.$server.confirmUpdate(id);
+  };
 
-    comboBox.$connector.confirm = function (id, filter) {
-        if (filter !== lastTypedFilter) {
-            return;
-        }
+  // Perform filter on client side (here) using the items from specified page
+  // and submitting the filtered items to specified callback.
+  // The filter used is the one from combobox, not the lastFilter stored since
+  // that may not reflect user's input.
+  const performClientSideFilter = function (page, filter, callback) {
+    let filteredItems = page;
 
-        // We're done applying changes from this batch, resolve pending
-        // callbacks
-        const {pendingRequests} = comboBox.__dataProviderController.rootCache;
-        Object.entries(pendingRequests).forEach(([page, callback]) => {
-            const items = cache[page];
+    if (filter) {
+      filteredItems = page.filter((item) => comboBox.$connector.filter(item, filter));
+    }
 
-            if (comboBox._clientSideFilter && items) {
-                performClientSideFilter(items, comboBox.filter, callback);
-                return;
-            }
+    callback(filteredItems, filteredItems.length);
+  };
 
-            callback(items ?? [], comboBox.size);
-            delete cache[page];
-        });
+  // Prevent setting the custom value as the 'value'-prop automatically
+  comboBox.addEventListener('custom-value-set', (e) => e.preventDefault());
 
-        // Let server know we're done
-        comboBox.$server.confirmUpdate(id);
-    };
+  comboBox.itemClassNameGenerator = function (item) {
+    return item.className || '';
+  };
 
-    // Perform filter on client side (here) using the items from specified page
-    // and submitting the filtered items to specified callback.
-    // The filter used is the one from combobox, not the lastFilter stored since
-    // that may not reflect user's input.
-    const performClientSideFilter = function (page, filter, callback) {
-        let filteredItems = page;
-
-        if (filter) {
-            filteredItems = page.filter((item) => comboBox.$connector.filter(item, filter));
-        }
-
-        callback(filteredItems, filteredItems.length);
-    };
-
-    // Prevent setting the custom value as the 'value'-prop automatically
-    comboBox.addEventListener('custom-value-set', (e) => e.preventDefault());
-
-    comboBox.itemClassNameGenerator = function (item) {
-        return item.className || '';
-    };
-
-    // Assign last, after all `$connector` functions are defined.
-    comboBox.dataProvider = dataProvider;
+  // Assign last, after all `$connector` functions are defined.
+  comboBox.dataProvider = dataProvider;
 };
 
 window.Vaadin.ComboBoxPlaceholder = ComboBoxPlaceholder;
