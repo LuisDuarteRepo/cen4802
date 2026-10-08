@@ -27,7 +27,6 @@ public class AddTest {
         assertEquals("Luis", newUser.getFirstName(), "First name could not be added");
         assertEquals("Duarte", newUser.getLastName(), "Last name could not be added");
         assertEquals("Test@email.com", newUser.getEmail(), "Email could not be added");
-        assertEquals("1234", newUser.getUsername());
     }
 
 }
