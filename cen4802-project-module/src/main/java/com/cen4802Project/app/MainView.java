@@ -11,6 +11,7 @@ import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.PropertyId;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.router.Route;
 
@@ -19,9 +20,11 @@ import java.util.List;
 @Route("")
 public class MainView extends VerticalLayout {
     private UserRepository repository;
-    private TextField firstName = new TextField("First Name");
-    private TextField lastName = new TextField("Last Name");
-    private EmailField email = new EmailField("Email");
+    @PropertyId("username") private TextField usernameField = new TextField("Username");
+    @PropertyId("password") private PasswordField passwordField = new PasswordField("Password");
+    @PropertyId("firstName")private TextField firstNameField = new TextField("First Name");
+    @PropertyId("lastName")private TextField lastNameField = new TextField("Last Name");
+    @PropertyId("email") private EmailField emailField = new EmailField("Email");
     //binder lets us connect a UI input field with a data model field
     private Binder<User> binder = new Binder<>(User.class);
     private Grid<User> grid = new Grid<>(User.class);
@@ -40,10 +43,19 @@ public class MainView extends VerticalLayout {
         var layout = new HorizontalLayout();
         layout.setAlignItems(Alignment.BASELINE);
 
+        TextField searchField = new TextField("Search Field");
+        searchField.setMaxLength(400);
+        searchField.setWidth("400px");
+        searchField.setHeight("50px");
+
+        Button searchButton = new Button("Search");
+        searchButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         Button addButton = new Button("Add");
-        Button loginButton = new Button("Login");
         addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        layout.add(firstName, lastName, email, addButton, loginButton);
+        Button loginButton = new Button("Login");
+        Button signUpButton = new Button("Sign Up");
+
+        layout.add(firstNameField, lastNameField, emailField, addButton, searchField, searchButton, loginButton, signUpButton);
 
         //inspects layout for fields that match the fields in the model and binds them together
         binder.bindInstanceFields(this);
@@ -63,6 +75,9 @@ public class MainView extends VerticalLayout {
         loginButton.addClickListener(c ->{
            openLoginDialog();
         });
+        signUpButton.addClickListener(c ->{
+           openSignUpDialog();
+        });
 
         return layout;
     }
@@ -77,11 +92,14 @@ public class MainView extends VerticalLayout {
 
     public void openLoginDialog(){
         Dialog dialog = new Dialog();
-        TextField usernameField = new TextField("username");
-        PasswordField passwordField = new PasswordField("password");
+        TextField usernameField = new TextField("Username");
+        PasswordField passwordField = new PasswordField("Password");
 
         usernameField.addValueChangeListener(e -> {
             username = e.getValue();
+
+        });
+        passwordField.addValueChangeListener(e -> {
             password = e.getValue();
         });
         Button closeButton = new Button("Close", e -> {
@@ -94,6 +112,48 @@ public class MainView extends VerticalLayout {
         dialog.addOpenedChangeListener(e ->{
             if(!e.isOpened()){
                 System.out.println("Values entered:" + username + password);
+            }
+        });
+        dialog.open();
+    }
+
+    String firstName = "";
+    String lastName = "";
+    String email = "";
+
+    public void openSignUpDialog(){
+        Dialog dialog = new Dialog();
+        var layout = new VerticalLayout();
+        usernameField.addValueChangeListener(e ->{
+           username = e.getValue();
+        });
+        passwordField.addValueChangeListener(e ->{
+            password = e.getValue();
+        });
+        firstNameField.addValueChangeListener(e ->{
+           firstName = e.getValue();
+        });
+        lastNameField.addValueChangeListener(e ->{
+           lastName = e.getValue();
+        });
+        emailField.addValueChangeListener(e ->{
+            email = e.getValue();
+        });
+        Button closeButton = new Button("Close", e -> {
+            dialog.close();
+        });
+        Button signUpButton = new Button("Sign up",e ->{
+            //
+        });
+        layout.add(usernameField, passwordField, firstNameField, lastNameField, emailField);
+        dialog.add(layout, signUpButton, closeButton);
+        dialog.addOpenedChangeListener(e ->{
+            if(!e.isOpened()){
+                System.out.println("Values entered:" + username);
+                System.out.println("Values entered:" + password);
+                System.out.println("Values entered:" + firstName);
+                System.out.println("Values entered:" + lastName);
+                System.out.println("Values entered:" + email);
             }
         });
         dialog.open();

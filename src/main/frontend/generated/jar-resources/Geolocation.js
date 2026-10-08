@@ -24,14 +24,12 @@ function copyCoords(c) {
         speed: c.speed
     };
 }
-
 const watches = new Map();
 // The cached availability for the current page. Populated on first
 // queryAvailability() call, refreshed from each get()/watch() outcome, and
 // kept current by a permissionchange listener (where supported).
 let cachedAvailability = null;
 let permissionChangeListenerInstalled = false;
-
 function publishAvailability(next) {
     if (cachedAvailability === next) {
         return;
@@ -40,10 +38,9 @@ function publishAvailability(next) {
     // Dispatch on document.body so the server-side Geolocation facade (listening
     // on the UI element, which is body) can update its cached value.
     document.body.dispatchEvent(new CustomEvent('vaadin-geolocation-availability-change', {
-        detail: {availability: next}
+        detail: { availability: next }
     }));
 }
-
 // Applies a single get()/watch() outcome to the cached availability and
 // returns the value to report in the response. Never overwrites
 // UNSUPPORTED, which is session-stable. TIMEOUT and POSITION_UNAVAILABLE
@@ -53,13 +50,13 @@ function getAndCacheAvailabilityFromResult(position, error) {
     if (cachedAvailability !== 'UNSUPPORTED') {
         if (position) {
             publishAvailability('GRANTED');
-        } else if (error?.code === 1) {
+        }
+        else if (error?.code === 1) {
             publishAvailability('DENIED');
         }
     }
     return cachedAvailability ?? 'UNKNOWN';
 }
-
 async function resolveAvailability() {
     if (!window.isSecureContext) {
         return 'UNSUPPORTED';
@@ -73,12 +70,13 @@ async function resolveAvailability() {
             if (!doc.featurePolicy.allowsFeature('geolocation')) {
                 return 'UNSUPPORTED';
             }
-        } catch (_e) {
+        }
+        catch (_e) {
             // Ignore and assume allowed
         }
     }
     try {
-        const status = await navigator.permissions.query({name: 'geolocation'});
+        const status = await navigator.permissions.query({ name: 'geolocation' });
         if (!permissionChangeListenerInstalled) {
             permissionChangeListenerInstalled = true;
             status.addEventListener('change', () => {
@@ -86,12 +84,12 @@ async function resolveAvailability() {
             });
         }
         return stateToAvailability(status.state);
-    } catch (_e) {
+    }
+    catch (_e) {
         // Safari rejects the 'geolocation' permission name with a TypeError
         return 'UNKNOWN';
     }
 }
-
 function stateToAvailability(state) {
     switch (state) {
         case 'granted':
@@ -104,7 +102,6 @@ function stateToAvailability(state) {
             return 'UNKNOWN';
     }
 }
-
 const $wnd = window;
 $wnd.Vaadin ??= {};
 $wnd.Vaadin.Flow ??= {};
@@ -112,11 +109,11 @@ $wnd.Vaadin.Flow.geolocation = {
     get(options) {
         return new Promise((resolve) => {
             navigator.geolocation.getCurrentPosition((p) => {
-                const position = {coords: copyCoords(p.coords), timestamp: p.timestamp};
-                resolve({position, availability: getAndCacheAvailabilityFromResult(position, undefined)});
+                const position = { coords: copyCoords(p.coords), timestamp: p.timestamp };
+                resolve({ position, availability: getAndCacheAvailabilityFromResult(position, undefined) });
             }, (e) => {
-                const error = {code: e.code, message: e.message};
-                resolve({error, availability: getAndCacheAvailabilityFromResult(undefined, error)});
+                const error = { code: e.code, message: e.message };
+                resolve({ error, availability: getAndCacheAvailabilityFromResult(undefined, error) });
             }, options || undefined);
         });
     },
@@ -125,13 +122,13 @@ $wnd.Vaadin.Flow.geolocation = {
             navigator.geolocation.clearWatch(watches.get(watchKey));
         }
         watches.set(watchKey, navigator.geolocation.watchPosition((p) => {
-            const position = {coords: copyCoords(p.coords), timestamp: p.timestamp};
+            const position = { coords: copyCoords(p.coords), timestamp: p.timestamp };
             getAndCacheAvailabilityFromResult(position, undefined);
             element.dispatchEvent(new CustomEvent('vaadin-geolocation-position', {
                 detail: position
             }));
         }, (e) => {
-            const error = {code: e.code, message: e.message};
+            const error = { code: e.code, message: e.message };
             getAndCacheAvailabilityFromResult(undefined, error);
             element.dispatchEvent(new CustomEvent('vaadin-geolocation-error', {
                 detail: error

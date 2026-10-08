@@ -47,7 +47,6 @@ function startDownload(url, filename) {
     a.click();
     a.remove();
 }
-
 const $wnd = window;
 $wnd.Vaadin ??= {};
 $wnd.Vaadin.Flow ??= {};
