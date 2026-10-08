@@ -1,0 +1,33 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with: 
+        distribution: temurin
+        java-version: '25'
+        cache: maven
+
+    - name: Build, test, and package
+      run: mvn -B clean verify
+    
+    - name: Build the Docker image
+      run: | 
+        docker build -t cen4802-app \
+          --tag cen4802-app:latest \
+          --tag cen4802-app:${{ github.sha }} \
+          .
