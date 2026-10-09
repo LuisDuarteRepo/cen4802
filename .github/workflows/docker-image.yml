@@ -43,8 +43,8 @@ jobs:
 
     - name: Push image to GHCR
       run: |
-        IMAGE=ghcr.io/${{ github.repository }}
-        docker tag cen4802-app:latest $IMAGE:latest
-        docker tag cen4802-app:${{ github.sha }} $IMAGE:${{ github.sha }}
+        IMAGE_NAME=ghcr.io/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+        docker tag cen4802-app:latest "$IMAGE:latest"
+        docker tag cen4802-app:${{ github.sha }} "$IMAGE:${{ github.sha }}"
         docker push $IMAGE:latest
         docker push $IMAGE:${{ github.sha }}
